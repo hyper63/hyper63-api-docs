@@ -279,13 +279,21 @@ paths:
                     type: string
     delete:
       description: >
-        # Delete store
+        # Delete Cache Store
 
         This function deletes a cache store and removes all
         keys that were a part of this store. Once a store
         is delete it will be impossible to recover the cache
         data, so make sure you use this function with great
         care.
+        
+        
+        ## Example
+        
+            DELETE /cache/default?confirm=true
+            
+        The confirm query flag is used to make sure that the intention is valid.
+        
       tags: [cache]
       parameters:
         - name: name
@@ -294,17 +302,43 @@ paths:
           required: true
           schema:
             type: string
+        - name: confirm
+          in: query
+          description: flag to confirm deletion
+          required: true
+          schema:
+            type: boolean
       responses:
         "200":
           description: successfully deleted store
+          content:
+            application/json:
+              schema:
+                properties:
+                  ok: 
+                    type: boolean
+        "500":
+          description: in order to delete store you must confirm
+          content:
+            application/json:
+              schema:
+                properties:
+                  ok: 
+                    type: boolean
+                  msg:
+                    type: string
     post:
       description: >
 
         # Create Cache Document
+        
+        Use this endpoint to create a key value pair in your cache, the key is the unique identifier and the value is the JSON document you would like to store in the cache. You can also include a `ttl` property to specify how long you would like your cache item to exist in the store, if you do not include `ttl` the default is to store the item as long as possible.
+
 
         This cache service accepts JSON documents, it is worth
         noting that a number, string, array are all valid json
         documents. 
+
 
         When storing a document to the cache, you will want to 
         give it a key, this is how you will recall your document
@@ -313,6 +347,31 @@ paths:
         how long to keep the value in the cache. The ttl property 
         takes values like `1m`  one minute, `2h` two hours, `3d` three days.
 
+        ## Key Syntax
+        
+        - lowercase alphanumeric string
+        
+        - maximum of 10 characters
+        
+        - dashes allowed; underscores not allowed
+        
+        - must begin with a letter
+
+        ## Example
+        
+            POST /cache/default
+            Content-Type: application/json
+            
+            {
+              "key": "hello-world",
+              "value": {
+                "name": "Earth",
+                "type": "Planet",
+                "date": "2020-12-24"
+              }
+            }
+            
+        
       tags: [cache]
       parameters:
         - name: name
@@ -404,6 +463,8 @@ paths:
                     default: true
                   docs:
                     type: array
+                    items:
+                      type: object
         "500":
           description: error occured with query
           content:
