@@ -408,7 +408,8 @@ paths:
                   type: object
                 ttl:
                   type: string
-                  description: time to live - values: 5m - 5 minutes, 2h - 2 hours, 4d - 4 days
+                  description: >
+                    time to live - values: 5m - 5 minutes, 2h - 2 hours, 4d - 4 days
       responses:
         "201":
           description: successfully create cache doc
